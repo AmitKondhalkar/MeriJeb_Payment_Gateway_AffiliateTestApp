@@ -1,0 +1,2 @@
+configurations.create("default")
+artifacts.add("default", file('merijebpaymentgateway-1.0.aar'))
