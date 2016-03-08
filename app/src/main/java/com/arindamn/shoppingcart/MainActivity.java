@@ -29,12 +29,12 @@ public class MainActivity extends AppCompatActivity{
 
     String merchantTestKeys[] = {"flipkartMerchantKey", "flipkartMerchantKey"};
     String merchantTestSalts[] = {"qwertyuiop", "qwertyuiop" };
-    String salt = "";
 
     String merchantProductionKeys[] = {"", ""};
     String merchantProductionSalts[] = {"", "",};
 
     String merchantKey = env == MeriJebConstant.PRODUCTION_ENV ? merchantProductionKeys[merchantIndex]:merchantTestKeys[merchantIndex];
+    String salt = env == MeriJebConstant.PRODUCTION_ENV ? merchantProductionSalts[merchantIndex]:merchantTestSalts[merchantIndex];
 
     String mandatoryKeys[] = {  MeriJebConstant.PRODUCT_INFO
             , MeriJebConstant.TXNID
@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity{
             , "me@itsmeonly.com"
             , "1000.0"
             , ""
-            , merchantKey
+            , ""
             , ""
             , ""
             , ""+env};
@@ -152,7 +152,8 @@ public class MainActivity extends AppCompatActivity{
                     break;
                 case MeriJebConstant.KEY:
                     //Below merchant key is for testing purpose. Please replace
-                    mPaymentParams.setKey(inputData);
+                    merchantKey = inputData;
+                    mPaymentParams.setKey(merchantKey);
                     break;
 
                 // other params- should be inside bundle, so that we can get them in next page.
@@ -172,9 +173,13 @@ public class MainActivity extends AppCompatActivity{
         // generate hash from client;
         /**
          *  just for testing, dont use this in production.
-         *  merchant should generate the hash from his server using the salt provided by MeriJeb
+         *  merchant should generate the hash from his server using the key and salt provided by MeriJeb
          *
          */
+        if(TextUtils.isEmpty(merchantKey)){
+            merchantKey = merchantTestKeys[merchantIndex];
+            mPaymentParams.setKey(merchantKey);
+        }
         if(TextUtils.isEmpty(salt)) {
             //this is test salt and has to be removed
             salt = merchantTestSalts[merchantIndex];
